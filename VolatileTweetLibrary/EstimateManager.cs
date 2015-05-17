@@ -135,9 +135,12 @@ namespace VolatileTweetLibrary
 			LoadWordTable();
 			double countMax = (double)_WordTable.Max((pair) => pair.Value);
 
-			string filepath = Path.Combine(_NetworkDirectory, LEARNING_FILENAME);
-			if (!File.Exists(filepath)) return null;
-			_Network = DeepBeliefNetwork.Load(filepath);
+			if (_Network == null)
+			{
+				string filepath = Path.Combine(_NetworkDirectory, LEARNING_FILENAME);
+				if (!File.Exists(filepath)) return null;
+				_Network = DeepBeliefNetwork.Load(filepath);
+			}
 
 			double[] input = new double[INPUT_COUNT];
 			Strip s = new Strip() { Text = text };

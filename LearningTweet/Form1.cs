@@ -18,7 +18,8 @@ namespace LearningTweet
 	public partial class FormMain : Form
 	{
 		EstimateManager _Learner;
-		VolatileManager _Volatile;
+		//VolatileManager _Volatile;
+		GenerateManager _Generate;
 
 		public FormMain()
 		{
@@ -133,18 +134,16 @@ namespace LearningTweet
 			VolatileTask task = e.Argument as VolatileTask;
 			if (task == null) return;
 
-			_Volatile = new VolatileManager(task.NetworkDir, task.ScreenName);
+			_Generate = new GenerateManager(task.NetworkDir, task.ScreenName, Define.CONSUMER, Define.CONSUMER_SECRET, Define.ACCESS, Define.ACCESS_SECRET);
 			if (task.Task == VolatileTask.TaskType.LEARN_VOLATILE)
 			{
-				IEnumerator enumerator = _Volatile.LearningMatrix(task.InputDir);
+				IEnumerator enumerator = _Generate.LearnByLocal(task.InputDir);
 				while (enumerator.MoveNext()) BackgroundWorkerVolatile.ReportProgress(0);
-				_Volatile.Save();
+				_Generate.Save();
 			}
 			else if(task.Task == VolatileTask.TaskType.TWEET)
 			{
-				_Volatile.Load();
-				BackgroundWorkerVolatile.ReportProgress(0);
-				_Volatile.Tweet();
+				_Generate.PublishTweet();
 			}
 		}
 

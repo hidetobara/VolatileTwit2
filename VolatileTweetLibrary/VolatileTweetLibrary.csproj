@@ -63,7 +63,7 @@
     <Compile Include="EstimateManager.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="StripManager.cs" />
-    <Compile Include="TweetManager.cs" />
+    <Compile Include="GenerateManager.cs" />
     <Compile Include="VolatileTask.cs" />
     <Compile Include="VolatileManager.cs" />
     <Compile Include="MorphemeManager.cs" />
