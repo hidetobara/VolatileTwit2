@@ -1,0 +1,10 @@
+﻿
+Define.cs
+
+bin/
+obj/
+Debug/
+
+*.pdb
+*.suo
+*.exe
