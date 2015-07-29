@@ -184,11 +184,12 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Home\Timeline.cshtml" />
     <Content Include="Views\Home\Analyze.cshtml" />
+    <Content Include="Views\Home\Volatile.cshtml" />
+    <Content Include="Views\Home\Learn.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

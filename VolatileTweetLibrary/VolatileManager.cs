@@ -165,6 +165,7 @@ namespace VolatileTweetLibrary
 			while(index != END)
 			{
 				if (reverse.ContainsKey(index)) result += reverse[index];
+				if (result.Length > 128) break;
 				index = _FlowMatrix[index].Invoke();
 			}
 			Log.Instance.Info("Tweet(): " + result);

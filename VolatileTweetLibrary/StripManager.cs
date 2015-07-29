@@ -17,8 +17,12 @@ namespace VolatileTweetLibrary
 	public class StripEstimated : Strip
 	{
 		public double Value;
+		public double[] Values;
 	}
 
+	/*
+	 * Tweetデータの読み込み
+	 */
 	public class StripManager
 	{
 		public List<Strip> LoadStrips(string path)

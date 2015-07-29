@@ -7,6 +7,8 @@ using System.IO;
 using Tweetinvi;
 using Tweetinvi.Core;
 
+using VolatileTweetLibrary;
+
 
 namespace Web6
 {
@@ -14,12 +16,15 @@ namespace Web6
 	{
 		public Dictionary<string, User> Users { get; private set; }
 
+		public TwitterManager(string key, string secret)
+		{
+			TwitterCredentials.SetCredentials(key, secret, Define.CONSUMER, Define.CONSUMER_SECRET);
+		}
+
 		public void Initialize(List<User> users)
 		{
 			Users = new Dictionary<string, User>();
 			foreach (var user in users) Users[user.ScreenName] = user;
-
-			TwitterCredentials.SetCredentials(Define.ACCESS, Define.ACCESS_SECRET, Define.CONSUMER, Define.CONSUMER_SECRET);
 		}
 
 		public List<Web6.Tweet> GetMyTimeline(long since)
@@ -48,10 +53,17 @@ namespace Web6
 				if (life <= 0) break;
 				if (string.IsNullOrEmpty(user.ImageUrl)) continue;
 
-				string path = GetUserImagePath(dir, user);
-				if (File.Exists(path)) continue;
-				WebClient client = new WebClient();
-				client.DownloadFile(user.ImageUrl, path);
+				try
+				{
+					string path = GetUserImagePath(dir, user);
+					if (File.Exists(path)) continue;
+					WebClient client = new WebClient();
+					client.DownloadFile(user.ImageUrl, path);
+				}
+				catch(Exception ex)
+				{
+					Log.Instance.Error(ex.Message + "@" + ex.StackTrace);	
+				}
 				life--;
 			}
 		}

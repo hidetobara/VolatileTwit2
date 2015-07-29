@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -15,6 +16,10 @@ namespace Web6.Controllers
 {
 	public class HomeController : Controller
 	{
+		private string IpadicDir { get { return HttpContext.Server.MapPath("~/App_Data/ipadic/"); } }
+		private string IconsDir { get { return HttpContext.Server.MapPath("~/App_Data/icons/"); } }
+		private string NetworkDir { get { return HttpContext.Server.MapPath("~/App_Data/"); } }
+
 		BasicContext db = new BasicContext();
 
 		public ActionResult Index()
@@ -33,7 +38,7 @@ namespace Web6.Controllers
 				string input = "";
 				foreach (var t in tweets) input += t.Text + Environment.NewLine;
 
-				MorphemeManager manager = MorphemeManager.Instance.Initialize(HttpContext.Server.MapPath("~/App_Data/ipadic/"));
+				MorphemeManager manager = MorphemeManager.Instance.Initialize(IpadicDir);
 				List<MorphemeManager.Item> items = manager.Parse(input);
 
 				Dictionary<string, int> table = new Dictionary<string, int>();
@@ -64,12 +69,12 @@ namespace Web6.Controllers
 		{
 			try
 			{
-				TwitterManager manager = new TwitterManager();
+				TwitterManager manager = new TwitterManager(Define.BARA_ACCESS_KEY, Define.BARA_ACCESS_SECRET);
 				manager.Initialize(db.Users.ToList());
 				long last = db.SelectLastTweetId();
 				db.Insert(manager.GetMyTimeline(last));
 				db.UpdateOrInsert(manager.Users.Values.ToList());
-				manager.DownloadUserImages(HttpContext.Server.MapPath("~/App_Data/icons/"));
+				manager.DownloadUserImages(IconsDir);
 				ViewBag.Message = "Last id is " + db.SelectLastTweetId();
 			}
 			catch (Exception ex)
@@ -79,11 +84,50 @@ namespace Web6.Controllers
 			return View();
 		}
 
-		public ActionResult Contact()
+		public ActionResult Volatile()
 		{
-			ViewBag.Message = "Your contact page.";
-
+			try
+			{
+				MorphemeManager.Instance.Initialize(IpadicDir);
+				GenerateManager m = new GenerateManager(NetworkDir, "shokos",
+					Define.CONSUMER, Define.CONSUMER_SECRET, Define.SHOKOS_ACCESS, Define.SHOKOS_ACCESS_SECRET);
+				m.PublishTweet();
+				ViewBag.Message = "OK";
+			}
+			catch(Exception ex)
+			{
+				ViewBag.Error = ex.Message + "@" + ex.StackTrace;
+			}
 			return View();
+		}
+
+		public ActionResult Learn()
+		{
+			try
+			{
+				List<Strip> strips = new List<Strip>();
+				foreach(var t in db.SelectRecentTweets(50))
+				{
+					strips.Add(new Strip() { ScreenName = t.ScreenName, Text = t.Text });
+				}
+
+				MorphemeManager.Instance.Initialize(IpadicDir);
+				EstimateManager estimate = new EstimateManager(NetworkDir);
+				
+				IEnumerator enumerator = estimate.Learn(strips);
+				while (enumerator.MoveNext()) { }
+
+				List<StripEstimated> valued = new List<StripEstimated>();
+				valued.Add(estimate.Compute("shokos", "ついったー上でもセクハラするなんて、腐さんは本当にひどい"));
+				valued.Add(estimate.Compute("shokos", "せーざんさんがハンターED見ながら、「一番人気なのはヒソカなのかな？」って言ったので、一応腐的な意味でか聞いた。"));
+				valued.Add(estimate.Compute("hidetobara", "夜の０時になっても、ガラスのお腹は元に戻らないんですよー。"));
+				return View(valued);
+			}
+			catch(Exception ex)
+			{
+				ViewBag.Error = ex.Message + "@" + ex.StackTrace;
+				return View(new List<StripEstimated>());
+			}
 		}
 
 		public struct Usage

@@ -17,9 +17,9 @@ namespace VolatileTweetLibrary
 		EstimateManager _Estimate;
 		VolatileManager _Volatile;
 
-		public GenerateManager(string dir, string screenName, string consumer, string consumerSecret, string user, string userSecret)
+		public GenerateManager(string dir, string screenName, string consumerKey, string consumerSecret, string userKey, string userSecret)
 		{
-			TwitterCredentials.SetCredentials(user, userSecret, consumer, consumerSecret);
+			TwitterCredentials.SetCredentials(userKey, userSecret, consumerKey, consumerSecret);
 			_ScreenName = screenName;
 			_Estimate = new EstimateManager(dir);
 			_Volatile = new VolatileManager(dir, screenName);
@@ -57,7 +57,7 @@ namespace VolatileTweetLibrary
 			}
 			var top = texts.OrderByDescending(x => x.Value).First();
 			// 投稿
-			//Tweet.PublishTweet(top.Key);
+			Tweet.PublishTweet(top.Key);
 		}
 	}
 }

@@ -18,8 +18,8 @@ namespace VolatileTweetLibrary
 {
 	public class EstimateManager
 	{
-		public const int INPUT_COUNT = 512 * 512;
-		public const int MIDDLE_COUNT = 64;
+		public const int INPUT_COUNT = 256 * 256;
+		public const int MIDDLE_COUNT = 32;
 		public const int OUTPUT_COUNT = 8;
 
 		private MorphemeManager _Morpheme;
@@ -89,6 +89,7 @@ namespace VolatileTweetLibrary
 				// ネットワークの重みをガウス分布で初期化する
 				new GaussianWeights(_Network).Randomize();
 				_Network.UpdateVisibleWeights();
+				Log.Instance.Info("New Learning !!!");
 			}
 			// 学習
 			BackPropagationLearning teacher = new BackPropagationLearning(_Network);
@@ -163,7 +164,7 @@ namespace VolatileTweetLibrary
 			{
 				string name = Number2Screen(i);
 				if (name == null || name != screenName) continue;
-				return new StripEstimated() { ScreenName = screenName, Text = text, Value = output[i] };
+				return new StripEstimated() { ScreenName = screenName, Text = text, Value = output[i], Values = output };
 			}
 			return null;
 		}
@@ -207,10 +208,12 @@ namespace VolatileTweetLibrary
 				writer.Close();
 			}
 		}
-		private void LoadWordTable()
+		private void LoadWordTable(bool force = false)
 		{
 			string filepath = Path.Combine(_NetworkDirectory, WORD_TABLE_FILENAME);
 			if (!File.Exists(filepath)) return;
+			if (!force && _WordTable.Count > 0) return;
+
 			_WordTable.Clear();
 			using (StreamReader reader = new StreamReader(filepath))
 			{
@@ -225,7 +228,7 @@ namespace VolatileTweetLibrary
 			}
 		}
 
-		private Dictionary<string, int> _ScreenTable = new Dictionary<string, int>() { { "hidetobara", 1 }, { "shokos", 2 }, { "yamasiro", 3 }, { "kusigahama", 4 } };
+		private Dictionary<string, int> _ScreenTable = new Dictionary<string, int>() { { "hidetobara", 1 }, { "shokos", 2 }, { "yamasiro", 3 }, { "kusigahama", 4 }, { "sayakame", 5 } };
 		private int Screen2Number(string s)
 		{
 			if (!_ScreenTable.ContainsKey(s)) return -1;
@@ -243,7 +246,7 @@ namespace VolatileTweetLibrary
 		}
 
 		private System.Security.Cryptography.SHA256CryptoServiceProvider _Sha256;
-		// MAX: 512*512
+		// MAX: 256*256
 		private int String2Hash(string s)
 		{
 			byte[] data = System.Text.Encoding.UTF8.GetBytes(s);
@@ -251,7 +254,7 @@ namespace VolatileTweetLibrary
 			if (_Sha256 == null) _Sha256 = new System.Security.Cryptography.SHA256CryptoServiceProvider();
 			//ハッシュ値を計算する
 			byte[] bs = _Sha256.ComputeHash(data);
-			return 256 * 256 * (bs[0] / 64) + 256 * bs[1] + bs[2];	// これで十分か判断は難しい
+			return 256 * bs[0] + bs[1];	// これで十分か判断は難しい
 		}
 	}
 }

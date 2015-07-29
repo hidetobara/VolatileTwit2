@@ -24,6 +24,12 @@ namespace Web6.Models
 			return Tweets.Max(record => record.Date);
 		}
 
+		public List<Tweet> SelectRecentTweets(int count = 30)
+		{
+			var list = Tweets.OrderByDescending(record => record.Date).Take(count);
+			return new List<Tweet>(list);
+		}
+
 		public List<Tweet> Select1DayTweets(int limit = 30)
 		{
 			DateTime now = DateTime.Now;

@@ -8,6 +8,9 @@ using NMeCab;
 
 namespace VolatileTweetLibrary
 {
+	/*
+	 * 形態素解析のラッパークラス
+	 */
 	public class MorphemeManager
 	{
 		MeCabTagger _Tagger;
