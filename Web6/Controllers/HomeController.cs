@@ -103,10 +103,19 @@ namespace Web6.Controllers
 
 		public ActionResult Learn()
 		{
+			const int TWEET_LIMIT = 15;
 			try
 			{
+				List<Tweet> tweets = new List<Tweet>();
+				tweets.AddRange(db.SelectRecentTweets(TWEET_LIMIT));
+				foreach (var name in new string[] { Define.NAME_SHOKOS, Define.NAME_BARA, Define.NAME_SAYAKAME, Define.NAME_KUSIGAHAMA })
+				{
+					try { tweets.AddRange(db.SelectRecentTweets(name, TWEET_LIMIT)); }
+					catch (Exception ex) { ViewBag.Error += ex.Message + "@" + ex.StackTrace + "<hr />"; }
+				}
+				
 				List<Strip> strips = new List<Strip>();
-				foreach(var t in db.SelectRecentTweets(50))
+				foreach(var t in tweets.OrderBy(tweet => Guid.NewGuid()))
 				{
 					strips.Add(new Strip() { ScreenName = t.ScreenName, Text = t.Text });
 				}
