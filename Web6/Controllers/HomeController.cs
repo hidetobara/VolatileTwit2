@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.IO;
 
 using Web6.Models;
 using Tweetinvi;
@@ -20,6 +21,7 @@ namespace Web6.Controllers
 		private string IpadicDir { get { return HttpContext.Server.MapPath("~/App_Data/ipadic/"); } }
 		private string IconsDir { get { return HttpContext.Server.MapPath("~/App_Data/icons/"); } }
 		private string NetworkDir { get { return HttpContext.Server.MapPath("~/App_Data/"); } }
+		private string BackupDir { get { return HttpContext.Server.MapPath("~/App_Data/backup/"); } }
 
 		BasicContext db = new BasicContext();
 
@@ -153,6 +155,38 @@ namespace Web6.Controllers
 			while (enumerator.MoveNext()) { }
 
 			return estimate;
+		}
+
+		public ActionResult Backup(string id)
+		{
+			StreamWriter writer = null;
+			try
+			{
+				if (string.IsNullOrEmpty(id)) throw new Exception("[ERROR] No name");
+				string dir = BackupDir;
+				if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+				writer = new StreamWriter(Path.Combine(dir, id + ".log"));
+				var tweets = db.Tweets.Where(t => t.ScreenName == id);
+				foreach(var tweet in tweets)
+				{
+					string text = tweet.Text;
+					text = text.Replace("\n", "");
+					text = text.Replace("\r", "");
+					writer.WriteLine(String.Format("{0},user_screen_name={1},create_at={2},text={3}",
+						tweet.TweetId, tweet.ScreenName, tweet.Date.ToString("u"), text));
+				}
+				ViewBag.Message = id + " tweet count=" + tweets.Count();
+			}
+			catch (Exception ex)
+			{
+				ViewBag.Error = ex.Message + "@" + ex.StackTrace;
+			}
+			finally
+			{
+				if (writer != null) writer.Close();
+				writer = null;
+			}
+			return View();
 		}
 
 		public struct Usage

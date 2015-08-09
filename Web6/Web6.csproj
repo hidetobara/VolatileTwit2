@@ -190,6 +190,7 @@
     <Content Include="Views\Home\Analyze.cshtml" />
     <Content Include="Views\Home\Volatile.cshtml" />
     <Content Include="Views\Home\Learn.cshtml" />
+    <Content Include="Views\Home\Backup.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
