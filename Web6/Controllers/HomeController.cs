@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 using Web6.Models;
 using Tweetinvi;
@@ -76,6 +77,13 @@ namespace Web6.Controllers
 				db.UpdateOrInsert(manager.Users.Values.ToList());
 				manager.DownloadUserImages(IconsDir);
 				ViewBag.Message = "Last id is " + db.SelectLastTweetId();
+
+				new Thread(
+					() =>
+					{
+						EstimateLearn();
+					})
+					.Start();
 			}
 			catch (Exception ex)
 			{
@@ -103,29 +111,11 @@ namespace Web6.Controllers
 
 		public ActionResult Learn()
 		{
-			const int TWEET_LIMIT = 15;
 			try
 			{
-				List<Tweet> tweets = new List<Tweet>();
-				tweets.AddRange(db.SelectRecentTweets(TWEET_LIMIT));
-				foreach (var name in new string[] { Define.NAME_SHOKOS, Define.NAME_BARA, Define.NAME_SAYAKAME, Define.NAME_KUSIGAHAMA })
-				{
-					try { tweets.AddRange(db.SelectRecentTweets(name, TWEET_LIMIT)); }
-					catch (Exception ex) { ViewBag.Error += ex.Message + "@" + ex.StackTrace + "<hr />"; }
-				}
-				
-				List<Strip> strips = new List<Strip>();
-				foreach(var t in tweets.OrderBy(tweet => Guid.NewGuid()))
-				{
-					strips.Add(new Strip() { ScreenName = t.ScreenName, Text = t.Text });
-				}
+				var estimate = EstimateLearn();
 
-				MorphemeManager.Instance.Initialize(IpadicDir);
-				EstimateManager estimate = new EstimateManager(NetworkDir);
-				
-				IEnumerator enumerator = estimate.Learn(strips);
-				while (enumerator.MoveNext()) { }
-
+				// 評価
 				List<StripEstimated> valued = new List<StripEstimated>();
 				valued.Add(estimate.Compute("shokos", "ついったー上でもセクハラするなんて、腐さんは本当にひどい"));
 				valued.Add(estimate.Compute("shokos", "せーざんさんがハンターED見ながら、「一番人気なのはヒソカなのかな？」って言ったので、一応腐的な意味でか聞いた。"));
@@ -137,6 +127,32 @@ namespace Web6.Controllers
 				ViewBag.Error = ex.Message + "@" + ex.StackTrace;
 				return View(new List<StripEstimated>());
 			}
+		}
+
+		// 学習
+		private EstimateManager EstimateLearn(int TweetLimit = 15)
+		{
+			List<Tweet> tweets = new List<Tweet>();
+			tweets.AddRange(db.SelectRecentTweets(TweetLimit));
+			foreach (var name in new string[] { Define.NAME_SHOKOS, Define.NAME_BARA, Define.NAME_SAYAKAME, Define.NAME_KUSIGAHAMA })
+			{
+				try { tweets.AddRange(db.SelectRecentTweets(name, TweetLimit)); }
+				catch (Exception ex) { ViewBag.Error += ex.Message + "@" + ex.StackTrace + "<hr />"; }
+			}
+
+			List<Strip> strips = new List<Strip>();
+			foreach (var t in tweets.OrderBy(tweet => Guid.NewGuid()))
+			{
+				strips.Add(new Strip() { ScreenName = t.ScreenName, Text = t.Text });
+			}
+
+			MorphemeManager.Instance.Initialize(IpadicDir);
+			EstimateManager estimate = new EstimateManager(NetworkDir);
+
+			IEnumerator enumerator = estimate.Learn(strips);
+			while (enumerator.MoveNext()) { }
+
+			return estimate;
 		}
 
 		public struct Usage
