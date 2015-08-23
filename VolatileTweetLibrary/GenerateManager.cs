@@ -49,7 +49,7 @@ namespace VolatileTweetLibrary
 			// 生成
 			Dictionary<string, double> texts = new Dictionary<string, double>();
 			_Volatile.Load();
-			for(int i = 0; i < 3; i++)
+			for(int i = 0; i < 5; i++)
 			{
 				string text = _Volatile.Tweet();
 				StripEstimated s = _Estimate.Compute(_ScreenName, text);
@@ -57,7 +57,7 @@ namespace VolatileTweetLibrary
 			}
 			var top = texts.OrderByDescending(x => x.Value).First();
 			// 投稿
-			Tweet.PublishTweet(top.Key);
+			Tweet.PublishTweet(top.Key + "。");
 		}
 	}
 }

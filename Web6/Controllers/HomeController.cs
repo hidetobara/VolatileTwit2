@@ -84,6 +84,7 @@ namespace Web6.Controllers
 					() =>
 					{
 						EstimateLearn();
+						VolatileTweet();
 					})
 					.Start();
 			}
@@ -98,10 +99,7 @@ namespace Web6.Controllers
 		{
 			try
 			{
-				MorphemeManager.Instance.Initialize(IpadicDir);
-				GenerateManager m = new GenerateManager(NetworkDir, "shokos",
-					Define.CONSUMER, Define.CONSUMER_SECRET, Define.SHOKOS_ACCESS, Define.SHOKOS_ACCESS_SECRET);
-				m.PublishTweet();
+				VolatileTweet();
 				ViewBag.Message = "OK";
 			}
 			catch(Exception ex)
@@ -109,6 +107,14 @@ namespace Web6.Controllers
 				ViewBag.Error = ex.Message + "@" + ex.StackTrace;
 			}
 			return View();
+		}
+
+		private void VolatileTweet(string name = "shokos")
+		{
+			MorphemeManager.Instance.Initialize(IpadicDir);
+			GenerateManager m = new GenerateManager(NetworkDir, name,
+				Define.CONSUMER, Define.CONSUMER_SECRET, Define.SHOKOS_ACCESS, Define.SHOKOS_ACCESS_SECRET);
+			m.PublishTweet();
 		}
 
 		public ActionResult Learn()

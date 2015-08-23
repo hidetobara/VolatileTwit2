@@ -58,6 +58,8 @@ namespace VolatileTweetLibrary
 
 		private bool LoadTexts(string path)
 		{
+			if (!File.Exists(path)) return false;
+
 			using(StreamReader reader = new StreamReader(path))
 			{
 				_TextTable.Clear();
@@ -75,6 +77,8 @@ namespace VolatileTweetLibrary
 		}
 		private bool LoadMatrix(string path)
 		{
+			if (!File.Exists(path)) return false;
+
 			using (StreamReader reader = new StreamReader(path))
 			{
 				_FlowMatrix.Clear();
