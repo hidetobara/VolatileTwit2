@@ -25,14 +25,6 @@ namespace VolatileTweetLibrary
 			_Volatile = new VolatileManager(dir, screenName);
 		}
 
-		public void LearnByTimeline()
-		{
-			// 取得
-
-			// 計算
-
-		}
-
 		public IEnumerator LearnByLocal(string dir)
 		{
 			_Volatile.Load();
@@ -44,17 +36,21 @@ namespace VolatileTweetLibrary
 			_Volatile.Save();
 		}
 
-		public void PublishTweet()
+		public void PublishTweet(int lowerLength = 8, int iterateLimit = 10)
 		{
 			// 生成
 			Dictionary<string, double> texts = new Dictionary<string, double>();
 			_Volatile.Load();
-			for(int i = 0; i < 5; i++)
+			for(int i = 0; i < iterateLimit; i++)
 			{
 				string text = _Volatile.Tweet();
+				if (text.Length < lowerLength) continue;
+
 				StripEstimated s = _Estimate.Compute(_ScreenName, text);
 				texts.Add(text, s.Value);
+				if (texts.Count >= 5) break;	// 固定で大丈夫か？
 			}
+			if (texts.Count == 0) return;
 			var top = texts.OrderByDescending(x => x.Value).First();
 			// 投稿
 			Tweet.PublishTweet(top.Key + "。");

@@ -84,7 +84,10 @@ namespace Web6.Controllers
 					() =>
 					{
 						EstimateLearn();
-						VolatileTweet();
+#if !DEBUG
+						if (DateTime.Now.Hour % 2 == 0)
+#endif
+							VolatileTweet();
 					})
 					.Start();
 			}
