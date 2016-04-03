@@ -175,7 +175,9 @@ namespace Web6.Controllers
 				string dir = BackupDir;
 				if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 				writer = new StreamWriter(Path.Combine(dir, id + ".log"));
-				var tweets = db.Tweets.Where(t => t.ScreenName == id);
+				List<Tweet> tweets = null;
+				if (id == "ALL") tweets = db.Tweets.ToList();
+				else tweets = db.Tweets.Where(t => t.ScreenName == id).ToList();
 				foreach(var tweet in tweets)
 				{
 					string text = tweet.Text;

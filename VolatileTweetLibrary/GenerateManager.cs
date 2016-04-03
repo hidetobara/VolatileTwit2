@@ -53,7 +53,7 @@ namespace VolatileTweetLibrary
 			if (texts.Count == 0) return;
 			var top = texts.OrderByDescending(x => x.Value).First();
 			// 投稿
-			Tweet.PublishTweet(top.Key + "。");
+			Tweet.PublishTweet(top.Key);
 		}
 	}
 }

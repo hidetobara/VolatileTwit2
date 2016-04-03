@@ -165,12 +165,18 @@ namespace VolatileTweetLibrary
 			foreach (var pair in _TextTable) reverse[pair.Value] = pair.Key;
 
 			int index = START;
+			int next = START;
+			const int limit = 128;	// 文字数制限
+			int life = 3;
 			string result = "";
 			while(index != END)
 			{
 				if (reverse.ContainsKey(index)) result += reverse[index];
-				if (result.Length > 128) break;
-				index = _FlowMatrix[index].Invoke();
+				if (result.Length > limit) break;
+				next = _FlowMatrix[index].Invoke();
+				if (next == index) life--;	// 同じ文言をあまり使わせない
+				if (life < 0) break;
+				index = next;
 			}
 			Log.Instance.Info("Tweet(): " + result);
 			return result;
