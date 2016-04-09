@@ -5,6 +5,7 @@ Define.cs
 bin/
 obj/
 Debug/
+Network/
 
 *.pdb
 *.suo
