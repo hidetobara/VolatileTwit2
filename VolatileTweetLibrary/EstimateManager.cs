@@ -126,7 +126,7 @@ namespace VolatileTweetLibrary
 				}
 			}
 			// バックアップをする
-			File.Copy(filepath, filepath + ".bak");
+			File.Copy(filepath, filepath + ".bak", true);
 			// 保存
 			_Network.Save(filepath);
 			Log.Instance.Info("Done: Learn");
