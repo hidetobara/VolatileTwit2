@@ -119,6 +119,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ServiceLineController.cs" />
     <Compile Include="Define.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -191,6 +192,8 @@
     <Content Include="Views\Home\Volatile.cshtml" />
     <Content Include="Views\Home\Learn.cshtml" />
     <Content Include="Views\Home\Backup.cshtml" />
+    <Content Include="Views\ServiceLine\Index.cshtml" />
+    <Content Include="Views\ServiceLine\Callback.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
