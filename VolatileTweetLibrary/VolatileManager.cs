@@ -127,18 +127,23 @@ namespace VolatileTweetLibrary
 			{
 				if (item.Origin == null || _Ignores.Contains(item.Origin)) continue;
 
-				block += item.Variation;
 				switch (item.Type)
 				{
 					case MorphemeManager.MorphemeType.PARTICLE:
 					case MorphemeManager.MorphemeType.ADJECTIVE:
 					case MorphemeManager.MorphemeType.ADVERB:
+						block += item.Variation;
 						blocks.Add(block);
 						block = "";
 						break;
 					case MorphemeManager.MorphemeType.NOUN:
 						if (previousType == MorphemeManager.MorphemeType.NOUN) { blocks.Add(block); block = ""; }
+						block += item.Variation;
 						break;
+					default:
+						block += item.Variation;
+						break;
+
 				}
 				previousType = item.Type;
 			}
@@ -166,16 +171,17 @@ namespace VolatileTweetLibrary
 
 			int index = START;
 			int next = START;
-			const int limit = 128;	// 文字数制限
-			int life = 3;
+			const int TextLimit = 128;  // 文字数制限
+			const int UseLimit = 3;	// 単語使用制限
+			Dictionary<int, int> used = new Dictionary<int, int>();
 			string result = "";
 			while(index != END)
 			{
 				if (reverse.ContainsKey(index)) result += reverse[index];
-				if (result.Length > limit) break;
-				next = _FlowMatrix[index].Invoke();
-				if (next == index) life--;	// 同じ文言をあまり使わせない
-				if (life < 0) break;
+				if (!used.ContainsKey(index)) used[index] = 1; else used[index]++;
+				if (used[index] > UseLimit) break;
+				if (result.Length > TextLimit) break;
+				next = _FlowMatrix[index].Invoke();				
 				index = next;
 			}
 			Log.Instance.Info("Tweet(): " + result);

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Collections;
 
 using Tweetinvi;
-using Tweetinvi.Core;
 
 
 namespace VolatileTweetLibrary
@@ -19,7 +18,7 @@ namespace VolatileTweetLibrary
 
 		public GenerateManager(string dir, string screenName, string consumerKey, string consumerSecret, string userKey, string userSecret)
 		{
-			TwitterCredentials.SetCredentials(userKey, userSecret, consumerKey, consumerSecret);
+			Auth.SetUserCredentials(consumerKey, consumerSecret, userKey, userSecret);
 			_ScreenName = screenName;
 			_Estimate = new EstimateManager(dir);
 			_Volatile = new VolatileManager(dir, screenName);
@@ -47,8 +46,8 @@ namespace VolatileTweetLibrary
 				if (text.Length < lowerLength) continue;
 
 				StripEstimated s = _Estimate.Compute(_ScreenName, text);
-				texts.Add(text, s.Value);
-				if (texts.Count >= 5) break;	// 固定で大丈夫か？
+				texts[text] = s.Value;
+				if (texts.Count >= 10) break;	// 固定で大丈夫か？
 			}
 			if (texts.Count == 0) return;
 			var top = texts.OrderByDescending(x => x.Value).First();

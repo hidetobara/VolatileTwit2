@@ -191,7 +191,7 @@
 			this.TextBoxResult.Multiline = true;
 			this.TextBoxResult.Name = "TextBoxResult";
 			this.TextBoxResult.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-			this.TextBoxResult.Size = new System.Drawing.Size(360, 209);
+			this.TextBoxResult.Size = new System.Drawing.Size(366, 209);
 			this.TextBoxResult.TabIndex = 11;
 			// 
 			// ButtonPrepare
@@ -260,7 +260,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(384, 462);
+			this.ClientSize = new System.Drawing.Size(390, 462);
 			this.Controls.Add(this.ButtonTweet);
 			this.Controls.Add(this.ButtonVolatile);
 			this.Controls.Add(this.ButtonPrepare);

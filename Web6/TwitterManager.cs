@@ -18,7 +18,7 @@ namespace Web6
 
 		public TwitterManager(string key, string secret)
 		{
-			TwitterCredentials.SetCredentials(key, secret, Define.CONSUMER, Define.CONSUMER_SECRET);
+			Auth.SetUserCredentials(Define.CONSUMER, Define.CONSUMER_SECRET, key, secret);
 		}
 
 		public void Initialize(List<User> users)
@@ -29,18 +29,12 @@ namespace Web6
 
 		public List<Web6.Tweet> GetMyTimeline(long since)
 		{
-			RequestParameters p = new RequestParameters();
-			p.MaximumNumberOfTweetsToRetrieve = 200;
-			p.ExcludeReplies = true;
-			p.IncludeEntities = false;
-			p.SinceId = since;
-
 			List<Web6.Tweet> list = new List<Web6.Tweet>();
 			foreach (var t in Timeline.GetHomeTimeline(200))
 			{
 				if (t.Id <= since) continue;
-				list.Add(new Tweet() { TweetId = t.Id, Date = t.CreatedAt, ScreenName = t.Creator.ScreenName, Text = t.Text });
-				Users[t.Creator.ScreenName] = new User() { UserId = t.Creator.Id, ScreenName = t.Creator.ScreenName, Name = t.Creator.Name, ImageUrl = t.Creator.ProfileImageUrl };
+				list.Add(new Tweet() { TweetId = t.Id, Date = t.CreatedAt, ScreenName = t.CreatedBy.ScreenName, Text = t.Text });
+				Users[t.CreatedBy.ScreenName] = new User() { UserId = t.CreatedBy.Id, ScreenName = t.CreatedBy.ScreenName, Name = t.CreatedBy.Name, ImageUrl = t.CreatedBy.ProfileImageUrl };
 			}
 			return list;
 		}
@@ -71,20 +65,6 @@ namespace Web6
 		{
 			if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 			return Path.Combine(dir, user.ScreenName + Path.GetExtension(user.ImageUrl));
-		}
-
-		class RequestParameters : Tweetinvi.Core.Interfaces.Models.Parameters.IHomeTimelineRequestParameters
-		{
-			public int MaximumNumberOfTweetsToRetrieve { get; set; }
-
-			public long SinceId { get; set; }
-			public long MaxId { get; set; }
-
-			public bool TrimUser { get; set; }
-			public bool IncludeEntities { get; set; }
-
-			public bool ExcludeReplies { get; set; }
-			public bool IncludeContributorDetails { get; set; }
 		}
 	}
 }

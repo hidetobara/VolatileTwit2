@@ -28,6 +28,7 @@ namespace VolatileTweetLibrary
 
 		private const string WORD_TABLE_FILENAME = "words.csv";
 		private const string LEARNING_FILENAME = "learning.bin";
+		private const string BACKUP_FOOTER = ".bak";
 
 		private string _NetworkDirectory;
 
@@ -95,13 +96,12 @@ namespace VolatileTweetLibrary
 			BackPropagationLearning teacher = new BackPropagationLearning(_Network);
 
 			int index = 0;
-			double[] input = new double[INPUT_COUNT];
-			double[] output = new double[OUTPUT_COUNT];
+			List<double[]> inputs = new List<double[]>();
+			List<double[]> outputs = new List<double[]>();
 			foreach (var strip in strips)
 			{
-				// 初期化
-				Array.Clear(input, 0, input.Length);
-				Array.Clear(output, 0, output.Length);
+				double[] input = new double[INPUT_COUNT];
+				double[] output = new double[OUTPUT_COUNT];
 
 				List<MorphemeManager.Item> items = Strip2Items(strip);
 				foreach (var item in items)
@@ -115,21 +115,30 @@ namespace VolatileTweetLibrary
 				}
 				int number = Screen2Number(strip.ScreenName);
 				if (number > 0) output[number] = 1;
-				teacher.RunEpoch(new double[][] { input }, new double[][] { output });
-				_Network.UpdateVisibleWeights();
+				inputs.Add(input);
+				outputs.Add(output);
 				index++;
-				if (index % 1000 == 0)
+				if (index % 1000 == 0) Log.Instance.Info("[" + index + "]: " + strip.Text);
+				if (index % 100 == 99)
 				{
-					Log.Instance.Info("[" + index + "]: " + strip.Text);
-					_Network.Save(filepath);
+					LearnUpdate(filepath, teacher, inputs, outputs);
+					inputs.Clear();
+					outputs.Clear();
 					yield return 0;
 				}
 			}
-			// バックアップをする
-			File.Copy(filepath, filepath + ".bak", true);
+			if (inputs.Count > 0) LearnUpdate(filepath, teacher, inputs, outputs);
 			// 保存
-			_Network.Save(filepath);
+			File.Copy(filepath + BACKUP_FOOTER, filepath, true);
 			Log.Instance.Info("Done: Learn");
+		}
+
+		private void LearnUpdate(string path, BackPropagationLearning teacher, List<double[]> inputs, List<double[]> outputs)
+		{
+			for (int i = 0; i < 5; i++)
+				teacher.RunEpoch(inputs.ToArray(), outputs.ToArray());
+			_Network.UpdateVisibleWeights();
+			_Network.Save(path + BACKUP_FOOTER);
 		}
 
 		public StripEstimated Compute(string screenName, string text)
