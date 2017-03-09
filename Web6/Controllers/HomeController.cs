@@ -72,7 +72,8 @@ namespace Web6.Controllers
 		{
 			try
 			{
-				TwitterManager manager = new TwitterManager(Define.BARA_ACCESS_KEY, Define.BARA_ACCESS_SECRET);
+				//TwitterManager manager = new TwitterManager(Define.BARA_ACCESS_KEY, Define.BARA_ACCESS_SECRET);
+				TwitterManager manager = new TwitterManager(Define.SHOKOS_ACCESS, Define.SHOKOS_ACCESS_SECRET);
 				manager.Initialize(db.Users.ToList());
 				long last = db.SelectLastTweetId();
 				db.Insert(manager.GetMyTimeline(last));
