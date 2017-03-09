@@ -134,7 +134,8 @@ namespace LearningTweet
 			VolatileTask task = e.Argument as VolatileTask;
 			if (task == null) return;
 
-			_Generate = new GenerateManager(task.NetworkDir, task.ScreenName, Define.CONSUMER_KEY, Define.CONSUMER_SECRET, Define.BARA_ACCESS_KEY, Define.BARA_ACCESS_SECRET);
+			//_Generate = new GenerateManager(task.NetworkDir, task.ScreenName, Define.CONSUMER_KEY, Define.CONSUMER_SECRET, Define.BARA_ACCESS_KEY, Define.BARA_ACCESS_SECRET);
+			_Generate = new GenerateManager(task.NetworkDir, task.ScreenName, Define.CONSUMER_KEY, Define.CONSUMER_SECRET, Define.SHOKOS_ACCESS, Define.SHOKOS_ACCESS_SECRET);
 			if (task.Task == VolatileTask.TaskType.LEARN_VOLATILE)
 			{
 				IEnumerator enumerator = _Generate.LearnByLocal(task.InputDir);
