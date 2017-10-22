@@ -80,10 +80,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\NMeCab\src\LibNMeCab\LibNMeCab.csproj">
-      <Project>{3ee156e1-fede-4ec5-b64a-3287ec3ab2e3}</Project>
-      <Name>LibNMeCab</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VolatileTweetLibrary\VolatileTweetLibrary.csproj">
       <Project>{5d5a946e-055a-4606-a972-af63e601cc51}</Project>
       <Name>VolatileTweetLibrary</Name>
